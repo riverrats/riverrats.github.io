@@ -167,8 +167,8 @@ function displaySchool(id) {
         return response.json()
     }).then((data) => {
 		var [teamData, tokenData] = extractJson(data["contents"])
-		var female = "<li style='text-align:center'>Female</li>"
-		var male = "<li style='text-align:center'>Male</li>";
+		var female = "<li style='text-align:center'>Women</li>"
+		var male = "<li style='text-align:center'>Men</li>";
 		teamData["athletes"].forEach(function(athlete) {
 			link = `<li><a class="athlete" href="#" data-athletename="${athlete["Name"]}" data-athleteid=${athlete["ID"]}>${athlete["Name"]}</a></li>\n`
 
@@ -178,8 +178,8 @@ function displaySchool(id) {
 				male += link
 			}
 		})
-		$("ul.female").html(female)
-		$("ul.male").html(male)
+		$("ul.women").html(female)
+		$("ul.men").html(male)
 		//addScript(tokenData["embedToken"], id)
     })
 }

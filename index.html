@@ -103,15 +103,13 @@
 			margin-top: 57px;
 			flex-wrap: nowrap;
 			align-items: stretch;
-			}
+		}
 		.athletes {
-			background: yellow;
 			display: flex;
 			flex-direction: row;
 			flex-shrink: 0;
 		}
 		.athletes > ul > li {
-			background: orange;
 			border: 1px solid black;
 			padding: .25rem;
 		}
@@ -130,6 +128,12 @@
 		.timeGraph {
 			max-width: 100%;
 			display: block;
+		}
+		.men > li > a {
+			color: "#61a3ce";
+		}
+		.women > li > a {
+			color: "#b283c6";
 		}
 	  </style>
   </head>
@@ -166,8 +170,8 @@
 <main>
 
 	<div class="athletes">
-		<ul class="male"></ul>
-		<ul class="female"></ul>
+		<ul class="men"></ul>
+		<ul class="women"></ul>
 	</div>
 	<div class="data">
 		<p>Some main content</p>
