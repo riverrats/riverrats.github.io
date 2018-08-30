@@ -111,13 +111,10 @@
 		}
 		.athletes > ul > li {
 			border: 1px solid black;
-			padding: .25rem;
+			margin: 0;
 		}
 		.athletes > ul {
 			list-style-type: none;
-		}
-		.athletes > ul > li > a {
-			text-decoration: none;
 		}
 		.data {
 			display: flex;
@@ -130,10 +127,23 @@
 			display: block;
 		}
 		.men > li > a {
-			color: "#61a3ce";
+			color: #61a3ce;
+		}
+		.men > li > a:hover {
+			font-weight:bold;
+			color: #1d83c6;
+		}
+		.women > li > a:hover {
+			font-weight:bold;
+			color: #9643ba;
 		}
 		.women > li > a {
-			color: "#b283c6";
+			color: #b283c6;
+		}
+		.athlete {
+			display: flex;
+			padding: 0 .25rem;
+			text-decoration: none;
 		}
 	  </style>
   </head>

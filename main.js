@@ -19,9 +19,8 @@ function displayAthlete(id, name) {
 		times = extractTimes(data["contents"])
 		console.log(times)
 		data = prepTimes(times)
-		graphTimes(data, name	)
+		graphTimes(data, name)
 	})
-	console.log(id, name);
 }
 
 function prepTimes(times) {
