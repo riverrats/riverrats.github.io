@@ -12,6 +12,8 @@ $(document).on("click", ".athlete", function() {
 	displayAthlete($(this).data('athleteid'), $(this).data('athletename'))
 });
 function displayAthlete(id, name) {
+	$('.loader').show()
+	$('.timeGraph').hide()
 	var url = `https://www.athletic.net/CrossCountry/Athlete.aspx?AID=${id}#!/L0`
 	fetch("https://allorigins.me/get?url=" + url).then(function(response) {
         return response.json()
@@ -19,7 +21,9 @@ function displayAthlete(id, name) {
 		times = extractTimes(data["contents"])
 		console.log(times)
 		data = prepTimes(times)
+		$('.loader').hide()
 		graphTimes(data, name)
+		$('.timeGraph').show()
 	})
 }
 
@@ -161,6 +165,7 @@ function extractTimes(source) {
 	return data
 }
 function displaySchool(id) {
+	$('.loader').show()
 	var url = `https://www.athletic.net/CrossCountry/School.aspx?SchoolID=${id}`
 	fetch("https://allorigins.me/get?url=" + url).then(function(response) {
         return response.json()
@@ -177,6 +182,7 @@ function displaySchool(id) {
 				male += link
 			}
 		})
+		$('.loader').hide()
 		$("ul.women").html(female)
 		$("ul.men").html(male)
 		//addScript(tokenData["embedToken"], id)
