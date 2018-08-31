@@ -6,7 +6,7 @@ $('a.preset-id').click(function() {
 $('button.custom-id').click(function() {
 	displaySchool($('.custom-id-value').val())
 });
-
+$()
 $(document).on("click", ".athlete", function() {
 	console.log("clicked");
 	displayAthlete($(this).data('athleteid'), $(this).data('athletename'))
@@ -19,7 +19,6 @@ function displayAthlete(id, name) {
         return response.json()
     }).then((data) => {
 		times = extractTimes(data["contents"])
-		console.log(times)
 		data = prepTimes(times)
 		$('.loader').hide()
 		graphTimes(data, name)
@@ -56,14 +55,10 @@ function prepTimes(times) {
 	}
 	prepped = times
 	prepped["times"] = preppedTimes
-	console.log(prepped)
 	return prepped
 }
 function graphTimes(times, name) {
 	var ctx = $('.timeGraph')
-	console.log(times['fastest'])
-	console.log(times['slowest'])
-	console.log(times['step'])
 	var chart = new Chart(ctx, {
     	type: 'line',
     	data: {
@@ -164,6 +159,21 @@ function extractTimes(source) {
 	console.log("slowest:", data["slowest"])
 	return data
 }
+function createAthleteList(athletesData) {
+	var female = "<li style='text-align:center'>Women</li>"
+	var male = "<li style='text-align:center'>Men</li>";
+	athletesData.forEach(function(athlete) {
+		link = `<li><a class="athlete" href="#" data-athletename="${athlete["Name"]}" data-athleteid=${athlete["ID"]}>${athlete["Name"]}</a></li>\n`
+
+		if (athlete["Gender"] == "F") {
+			female += link
+		} else {
+			male += link
+		}
+	})
+	return [male, female]
+
+}
 function displaySchool(id) {
 	$('.loader').show()
 	var url = `https://www.athletic.net/CrossCountry/School.aspx?SchoolID=${id}`
@@ -171,26 +181,11 @@ function displaySchool(id) {
         return response.json()
     }).then((data) => {
 		var [teamData, tokenData] = extractJson(data["contents"])
-		var female = "<li style='text-align:center'>Women</li>"
-		var male = "<li style='text-align:center'>Men</li>";
-		teamData["athletes"].forEach(function(athlete) {
-			link = `<li><a class="athlete" href="#" data-athletename="${athlete["Name"]}" data-athleteid=${athlete["ID"]}>${athlete["Name"]}</a></li>\n`
-
-			if (athlete["Gender"] == "F") {
-				female += link
-			} else {
-				male += link
-			}
-		})
+		var [men, women] = createAthleteList(teamData["athletes"])
 		$('.loader').hide()
-		$("ul.women").html(female)
-		$("ul.men").html(male)
-		//addScript(tokenData["embedToken"], id)
+		$("ul.women").html(women)
+		$("ul.men").html(men)
     })
-}
-function addScript(tokenID, teamID) {
-	var scriptTag = `<script src="https://www.athletic.net/api/1/RemoteHTML.ashx?Report=XCCalendar1&Style=2SchoolID=${teamID}&Season=2018&t=${tokenID}" type="text/javascript"></script>`
-	postscribe($("main"), scriptTag)
 }
 function extractJson(source) {
 	var rawTeamData = /constant\("initialData", (.+)\);/.exec(source);
