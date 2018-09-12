@@ -58,8 +58,11 @@ function prepTimes(times) {
 	return prepped
 }
 function graphTimes(times, name) {
-	var ctx = $('.timeGraph')
-	var chart = new Chart(ctx, {
+	var ctx = $('.timeGraph');
+	if (window.chart != undefined) {
+		window.chart.destroy();
+	}
+	var window.chart = new Chart(ctx, {
     	type: 'line',
     	data: {
         	datasets: times['times']
