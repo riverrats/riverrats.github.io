@@ -1,5 +1,4 @@
 $('a.preset-id').click(function() {
-		console.log("running v1")
 		displaySchool($(this).data('schoolid'))
 });
 
@@ -8,7 +7,6 @@ $('button.custom-id').click(function() {
 });
 $()
 $(document).on("click", ".athlete", function() {
-	console.log("clicked");
 	displayAthlete($(this).data('athleteid'), $(this).data('athletename'))
 });
 function displayAthlete(id, name) {
@@ -186,7 +184,6 @@ function extractTimes(source) {
 		}
 	}
 	data["step"] = 15000
-	console.log("slowest:", data["slowest"])
 	return data
 }
 function createAthleteList(athletesData) {
