@@ -57,9 +57,38 @@ function prepTimes(times) {
 	prepped["times"] = preppedTimes
 	return prepped
 }
+$('.athlete-search-men').keyup(function() {
+  filter = $(this).val().toLowerCase().replace(/\s+/g, '')
+  console.log(filter)
+  filterAthletes("ul.men", filter)
+})
+$('.athlete-search-women').keyup(function() {
+	filter = $(this).val().toLowerCase().replace(/\s+/g, '')
+	console.log(filter)
+	filterAthletes("ul.women", filter)
+  })
+//$('.athlete-search').keyup(filterAthletes($(this).val().toLowerCase().replace(/\s+/g, '')))
+function filterAthletes(list, searchFilter) {
+  var counter = 0;
+  var max_show = 10;
+	$(list + ' .athlete').each(function() {
+		
+		listValue = $(this).data('athletename').toLowerCase().replace(/\s+/g, '')
+		
+		if ((listValue.indexOf(searchFilter) != -1) && (counter < max_show)) {
+			$(this).show();
+      		counter++;
+		} else {
+			$(this).hide();
+		}
+	})
+}
 function graphTimes(times, name) {
 	var ctx = $('.timeGraph')
-	var chart = new Chart(ctx, {
+	if (window.graph != undefined) {
+		window.graph.destroy()
+	}
+	window.graph = new Chart(ctx, {
     	type: 'line',
     	data: {
         	datasets: times['times']
@@ -91,6 +120,7 @@ function graphTimes(times, name) {
 						min: times['fastest'],
 						max: times['slowest'],
 						stepSize: times['step'],
+						autoSkip: true,
 						callback: (rawTime) => {
 							time = moment(rawTime)
 							return time.format('mm:ss.S')
@@ -160,10 +190,10 @@ function extractTimes(source) {
 	return data
 }
 function createAthleteList(athletesData) {
-	var female = "<li style='text-align:center'>Women</li>"
-	var male = "<li style='text-align:center'>Men</li>";
+	var female = ""
+	var male = ""
 	athletesData.forEach(function(athlete) {
-		link = `<li><a class="athlete" href="#" data-athletename="${athlete["Name"]}" data-athleteid=${athlete["ID"]}>${athlete["Name"]}</a></li>\n`
+		link = `<li class="athlete-wrapper"><a class="athlete" href="#" data-athletename="${athlete["Name"]}" data-athleteid=${athlete["ID"]}>${athlete["Name"]}</a></li>\n`
 
 		if (athlete["Gender"] == "F") {
 			female += link
@@ -185,6 +215,8 @@ function displaySchool(id) {
 		$('.loader').hide()
 		$("ul.women").html(women)
 		$("ul.men").html(men)
+	filterAthletes("ul.men","")
+	filterAthletes("ul.women","")
     })
 }
 function extractJson(source) {
