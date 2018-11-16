@@ -35,7 +35,7 @@ function extractJson(source) {
 }
 function getMeetTeams(meetID, modeLetter) {
   var mode = "CrossCountry";
-  (if modeLetter == "T") {
+  if (modeLetter == "T") {
     mode = "TrackAndField";
   }
 var url = `https://www.athletic.net/${mode}/meet/${meetID}/teams`;
