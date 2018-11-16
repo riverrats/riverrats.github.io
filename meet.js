@@ -6,7 +6,6 @@ $('#submit').click(function() {
   var meetID = $("input#meetID").val();
   console.log(meetID);
   console.log(radioValue);
-  
   console.log(randMeetName);
 });
 
