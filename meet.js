@@ -30,14 +30,14 @@ function extractJson(source) {
 	return [JSON.parse(rawTeamData[1]), JSON.parse(rawTokenData[1])]
 }
 function getMeetTeams(meetID, modeLetter) {
-  var mode = "CrossCountry
+  var mode = "CrossCountry";
   if modeLetter == "T" {
-    mode = "TrackAndField"
+    mode = "TrackAndField";
   }
-	var url = `https://www.athletic.net/${mode}/meet/${meetID}/teams`
+var url = `https://www.athletic.net/${mode}/meet/${meetID}/teams`;
   console.log(url);
 	fetch("https://allorigins.me/get?url=" + url).then(function(response) {
-        return response.json()
+        return response.json();
     }).then((data) => {
 		  var [teamData, _] = extractJson(data["contents"]);
 		  console.log(teamData["teams"]);
