@@ -164,8 +164,11 @@ function extractTimes(source) {
 		}
 		for (let race of races) {
 			date = race.querySelector('td[style="width: 60px;"]').textContent
-			time = race.querySelector('td[style="width: 110px;"] > a').firstChild.textContent
+			time = race.querySelector('td[style="width:110px;"] > a').firstChild.textContent
 			var [min, sec, milli] = time.split(/\:|\./)
+			if (min > 9) {
+				continue;
+			}
 			data["times"][year].push({"date":new Date(date + " 2000"),"time":new Date(1970, 1, 1, 0, min, sec, milli * 100)})
 			numItems += 1
 		}
