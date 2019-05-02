@@ -13,10 +13,8 @@ function displayAthlete(id, name) {
 	$('.loader').show()
 	$('.timeGraph').hide()
 	var url = `https://www.athletic.net/TrackAndField/Athlete.aspx?AID=${id}#!/L0`
-	fetch("https://cors-anywhere.herokuapp.com/" + url).then(function(response) {
-        return response.json()
-    }).then((data) => {
-		times = extractTimes(data["contents"])
+	fetch("https://cors-anywhere.herokuapp.com/" + url).then((t) => t.text()).then(function (data) {
+		times = extractTimes(data)
 		data = prepTimes(times)
 		$('.loader').hide()
 		graphTimes(data, name)
