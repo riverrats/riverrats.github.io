@@ -205,8 +205,8 @@ function displaySchool(id) {
 	$('.loader').show()
 	var url = `https://www.athletic.net/TrackAndField/School.aspx?SchoolID=${id}`
 	fetch("https://cors-anywhere.herokuapp.com/" + url).then((data) => {
-		console.log(data);
-		var [teamData, tokenData] = extractJson(data.body);
+		console.log(data.text().length);
+		var [teamData, tokenData] = extractJson(data.text());
 		var [men, women] = createAthleteList(teamData["athletes"])
 		$('.loader').hide()
 		$("ul.women").html(women)
