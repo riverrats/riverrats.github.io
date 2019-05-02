@@ -156,7 +156,7 @@ function extractTimes(source) {
 	var numItems = 0;
 	for (let tag of tags) {
 		headerTags = tag.getElementsByTagName("h5")
-		if (headerTags[1].textContent != "5,000 Meters") {
+		if (headerTags[1].textContent != "1600 Meters") {
 			continue
 		}
 		year = tag.classList[4].slice(1)
@@ -205,7 +205,8 @@ function displaySchool(id) {
 	$('.loader').show()
 	var url = `https://www.athletic.net/TrackAndField/School.aspx?SchoolID=${id}`
 	fetch("https://cors-anywhere.herokuapp.com/" + url).then((data) => {
-		var [teamData, tokenData] = extractJson(data["contents"])
+		console.log(data);
+		var [teamData, tokenData] = extractJson(data);
 		var [men, women] = createAthleteList(teamData["athletes"])
 		$('.loader').hide()
 		$("ul.women").html(women)
