@@ -12,8 +12,8 @@ $(document).on("click", ".athlete", function() {
 function displayAthlete(id, name) {
 	$('.loader').show()
 	$('.timeGraph').hide()
-	var url = `https://www.athletic.net/CrossCountry/Athlete.aspx?AID=${id}#!/L0`
-	fetch("https://allorigins.me/get?url=" + url).then(function(response) {
+	var url = `https://www.athletic.net/TrackAndField/Athlete.aspx?AID=${id}#!/L0`
+	fetch("https://cors-anywhere.herokuapp.com/" + url).then(function(response) {
         return response.json()
     }).then((data) => {
 		times = extractTimes(data["contents"])
@@ -110,7 +110,7 @@ function graphTimes(times, name) {
 				yAxes: [{
 					scaleLabel: {
 						display: true,
-						labelString: '5k Time'
+						labelString: 'Time'
 					},
 					type: 'linear',
 					position: 'left',
@@ -203,8 +203,8 @@ function createAthleteList(athletesData) {
 }
 function displaySchool(id) {
 	$('.loader').show()
-	var url = `https://www.athletic.net/CrossCountry/School.aspx?SchoolID=${id}`
-	fetch("https://allorigins.me/get?url=" + url).then(function(response) {
+	var url = `https://www.athletic.net/TrackAndField/School.aspx?SchoolID=${id}`
+	fetch("https://cors-anywhere.herokuapp.com/" + url).then(function(response) {
         return response.json()
     }).then((data) => {
 		var [teamData, tokenData] = extractJson(data["contents"])
