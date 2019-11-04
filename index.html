@@ -54,15 +54,17 @@
         </div>
         <div class="row">
 
-            <canvas id='graph'>
+            <canvas id='chart'>
                 
             </canvas>
         </div>
     </div>
     <script>
         function graphData(times, [fastest, slowest]) {
-            console.log(times)
-            new Chart($('#graph'), {
+            if (window.graph != undefined) {
+                window.graph.destroy()
+            }
+            window.graph = new Chart($('#chart'), {
                 type: 'line',
                 data: {
                     datasets: times
