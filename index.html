@@ -6,13 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-    <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="grapher.js"></script>
     <script src="https://momentjs.com/downloads/moment.js"></script>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://underscorejs.org/underscore-min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.2/dist/Chart.min.js"></script>
-
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <style>
         div.small>*,
         img {
@@ -38,16 +37,28 @@
 </head>
 
 <body>
-    <input type="text" placeholder="Search Athlete">
-    <table id="results">
+    <div class="container">
+        <div class="row mt-5">
 
-    </table>
-    <ul id="events">
+            <div class="col">
+                
+                <input class="form-control" type="text" placeholder="Search Athlete">
+                <table id="results">
+                </table>
+            </div>
+            <div class="col">
+                <ul id="events">
+                    Select Event
+                </ul>
+            </div>
+        </div>
+        <div class="row">
 
-    </ul>
-    <canvas id='graph'>
-
-    </canvas>
+            <canvas id='graph'>
+                
+            </canvas>
+        </div>
+    </div>
     <script>
         function graphData(times, [fastest, slowest]) {
             console.log(times)
