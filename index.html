@@ -1,246 +1,202 @@
 <!DOCTYPE html>
+<html lang="en">
 
 <head>
-	<title>Statlete</title>
-	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ"
-	 crossorigin="anonymous">
-	<style>
-		* {
-			margin: 0;
-			padding: 0;
-		}
-		main {
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="grapher.js"></script>
+    <script src="https://momentjs.com/downloads/moment.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://underscorejs.org/underscore-min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.2/dist/Chart.min.js"></script>
 
-			display: flex;
-			flex-direction: row;
-			margin-top: 3.6rem;
-			flex-wrap: nowrap;
-			align-items: stretch;
-		}
+    <style>
+        div.small>*,
+        img {
+            display: none;
+        }
 
+        a {
+            text-decoration: none;
+            color: black;
+            margin-right: 2em;
+        }
 
-	  	body {
-			background: white;
-			font-family: 'Helvetica Neue', Helvetica;
-			font-weight: 400;
-			line-height: 1.6rem;
-		}
-		header {
-			color: white;
-			top: 0;
-			position: fixed;
-			background: #d777ea; /*light purple*/
-			width: 100%;
-			display: block;
-		}
-		header > nav > ul {
-			display: flex;
-			margin: 0;
-			padding: 0;
-			justify-content: flex-start;
-			list-style: none;
-			flex-wrap: wrap;
-		}
-		header > nav > ul > li {
-			margin: 0;
-			flex: 0 1 auto;
-			position: relative;
-			transition: 0.2s;
-			cursor: pointer;
-		}
-		header > nav > ul > li:hover {
-			background: #aa64e0; /*dark purple*/
-		}
- 		header > nav > ul > li > ul {
-			/* dropdown */
-			position: absolute;
-			/*light blue*/
-			display: none;
-			list-style-type: none;
-			margin: 0;
-			padding: 0;
-		}
-		.team-picker ul {
-			background: #76a1e8;
-		}
-		header > nav > ul > li:hover > ul {
-			/* dropdown */
+        a:hover {
+            text-decoration: underline;
+        }
 
-			display: block;
-			width: 11rem;
-
-		}
-		header > nav > ul > li > a {
-			color: white;
-			display: flex;
-			font-size: 1.5rem; /*30.4*/
-			text-decoration: none;
-			padding: 1rem 1.5rem; /*19 + 19*/
-			letter-spacing: 1px;
-
-		}
-		header > nav > ul > li > ul > li {
-			display: block;
-		}
-		header > nav > ul > li > ul > li > a {
-			text-decoration: none;
-			color: white;
-			display: flex;
-			letter-spacing: 1px;
-			cursor: pointer;
-			padding: .25rem 1.5rem;
-		}
-		.team-picker > ul > li:hover {
-			background: blue;
-		}
-		header > nav > ul > li > a > i {
-			margin-left: .25rem;
-		}
-		input {
-			padding: .25rem;
-			width: 5rem;
-		}
-
-		header > nav > ul > li > ul > li > input:invalid + button {
-			background: red;
-			cursor: not-allowed;
-
-		}
-		.data {
-			display: flex;
-			flex-direction: column;
-			padding-left: .5rem;
-			flex-grow: 1;
-		}
-		.timeGraph {
-			margin-top: .5rem;
-			display: none;
-			max-width: 100%;
-		}
-		.men > li > a {
-			color: #61a3ce;
-		}
-		.men > li > a:hover {
-			font-weight:bold;
-			color: #1d83c6;
-		}
-		.women > li > a:hover {
-			font-weight:bold;
-			color: #7d399c;
-		}
-		.women > li > a {
-			color: #a642d1;
-		}
-		.athlete {
-			display: flex;
-			background: white;
-			padding: 0 .25rem;
-			text-decoration: none;
-		}
-		.loader {
-  			display: none;
-			margin: 0 auto;
-			width: 21rem;
-			height: 21rem;
-		}
-		.loader:after {
-			content: " ";
-			display: block;
-			width: 14rem;
-			height: 14rem;
-			margin: 1px;
-			border-radius: 50%;
-			border: 3rem solid black;
-			border-color: black transparent black black;
-			animation: spin 1.2s linear infinite;
-		}
-		@keyframes spin {
-  			0% { transform: rotate(0deg); }
-  			100% { transform: rotate(360deg); }
-		}
-		@media screen and (max-width: 800px) {
-			html {
-				font-size: 10px;
-			}
-		}
-		@media screen and (orientation: portrait) {
-			html {
-				font-size: 15px;
-			}
-			main {
-				flex-direction: column-reverse;
-			}
-			.loader {
-				margin: 1rem auto;
-				width: 6rem;
-				height: 6rem;
-			}
-			.loader:after {
-				width: 4rem;
-				height: 4rem;
-				border: 1rem solid black;
-				border-color: black transparent black black;
-			}
-		}
-
-	  </style>
+        .line {
+            fill: none;
+            stroke: blue;
+            stroke-width: 2px;
+        }
+    </style>
 </head>
 
 <body>
-	<header>
-		<nav>
-			<ul>
-				<li class="team-picker">
-					<a href="#">Team<i class="fas fa-caret-down"></i></a>
-					<ul>
-						<li><a class="preset-id" data-schoolid=13318>Huron</a> </li>
-						<li><a class="preset-id" data-schoolid=13319>Pioneer</a></li>
-						<li>
-							<form>
-								<input type="number" min="1" max="100000" placeholder="School ID #" required>
-								<button class="custom-id" type="submit">Go
-							</form>
-							</a>
-						</li>
-					</ul>
-				</li>
-				<li class="athlete-picker">
-					<a href="#"><input class="athlete-search-men" placeholder="Search Men"></input></a>
+    <input type="text" placeholder="Search Athlete">
+    <table id="results">
 
-					<ul class="men">
-					</ul>
+    </table>
+    <ul id="events">
 
-				</li>
-				<li class="athlete-picker">
-					<a href="#"><input class="athlete-search-women" placeholder="Search Women"></input></a>
-					<ul class="women">
-					</ul>
-				</li>
-				<li>
-					<a href="hyp_meet.html">Hypothetical Meet</a>
-				</li>
-			</ul>
+    </ul>
+    <canvas id='graph'>
 
-		</nav>
-	</header>
-	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-	 crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/postscribe/2.0.8/postscribe.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.min.js"></script>
+    </canvas>
+    <script>
+        function graphData(times, [fastest, slowest]) {
+            console.log(times)
+            new Chart($('#graph'), {
+                type: 'line',
+                data: {
+                    datasets: times
+                },
+                options: {
+                    scales: {
+                        xAxes: [{
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Date'
+                            },
+                            type: 'time',
+                            time: {
+                                displayFormats: {
+                                    week: 'MMM DD'
+                                }
+                            }
+                        }],
+                        yAxes: [{
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Time'
+                            },
+                            type: 'linear',
+                            position: 'left',
+                            ticks: {
+                                min: fastest - 5000,
+                                max: slowest + 5000,
+                                stepSize: 15000,
+                                autoSkip: true,
+                                callback: (rawTime) => {
+                                    time = moment(rawTime)
+                                    return time.format('mm:ss.S')
+                                }
+                            }
+                        }]
+                    },
+                    title: {
+                        display: true,
+                        text: name
+                    },
+                    hover: {
+                        mode: "nearest"
+                    },
+                    tooltips: {
+                        callbacks: {
+                            title: function (tooltip, data) {
+                                year = data.datasets[tooltip[0].datasetIndex].label
+                                return moment(tooltip[0].xLabel).format('MMM DD ') + year
+                            },
+                            label: function (tooltip, data) {
+                                time = moment(tooltip.yLabel).format('mm:ss.S')
+                                return time
+                            }
+                        }
+                    }
+                }
+            });
+        }
 
-	<script src="main.js"></script>
-	<main>
+        let throttledHandleInput = _.throttle(handleInput, 500)
+        $("input[type='text']").on('input', throttledHandleInput)
+        function handleInput() {
+            let val = this.value
+            if (val.length > 3) {
+                // Search team
+                $('#results').html('<tr class="info"><td>Loading...</td></tr>')
+                postCORS("https://www.athletic.net/Search.aspx/runSearch",
+                    { 'fq': 't:a', 'q': val, start: 0 }).then(data => {
+                        $('#results').html(data.d.results)
+                        $('a.result-title-xc, a.result-title-tf, a[data-toggle="tooltip"]')
+                            .each((_, elem) => {
+                                elem = $(elem)
+                                let href = elem.attr('href').split('/')
+                                elem.data('sport', href[0])
+                                elem.data('id', href[1].split('=')[1])
+                                elem.attr('href', '#')
+                                elem.attr('class', 'athlete')
+                                elem.append(href[0])
+                            })
+                    }).catch(e => {
+
+                        $(".info").text('Error:', e.statusText)
+                    })
+            }
+        }
+        // margins?
+        // 10:50.12", "Mar 15 2018
+        var DATA = null
+        // dynamically added https://stackoverflow.com/questions/16022744/jquery-on-click-not-working
+        // when sport is clicked, set data, wipe old elements, set new elements
+        $('#results').on('click', 'a.athlete', event => {
+            let tag = $(event.target)
+            let sport = tag.data('sport')
+            let id = tag.data('id')
+            getCORS(`https://www.athletic.net/${sport}/Athlete.aspx?AID=${id}&L=0`)
+                .then(data => {
+                    let parsedDOM = new DOMParser().parseFromString(data, "text/html")
+                    return [parsedDOM, sport]
+                })
+                .then(parseData)
+                .then(restructureData)
+                .then(restructured => {
+                    $('#events').children().remove()
+                    Object.keys(restructured).forEach((val, i) => {
+                        $('#events').append(`<li><a class="epic" href="#">${val}</a></li>`)
+                    })
+                    return restructured
+                }).then(data => {
+                    DATA = data
+                })
+
+            // when event is clicked
+            $('#events').on('click', 'a.epic', clickEvent => {
+                let sport = $(clickEvent.target).text()
+                let event = DATA[sport]
+                let allData = _.flatten(_.values(event), true)
+                let fastestTime = _.min(allData, (race) => race.y).y
+                let slowestTime = _.max(allData, (race) => race.y).y
+                // add properties to each node
+                generalProps = {
+
+                    lineTension: 0,
+                    fill: false,
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                }
+                var colors = ["#7ad3c0", "#61a3ce", "#b283c6", "#c45850"]
 
 
-		<div class="data">
-			<div class="loader">
-			</div>
-			<div class="graph-container">
-				<canvas class="timeGraph"></canvas>
-			</div>
-		</div>
-	</main>
+                let obj = Object.keys(event).map((key, idx) => {
+                    let base = Object.assign({}, generalProps)
+                    base.borderColor = colors[idx]
+                    base.pointBackgroundColor = colors[idx]
+                    base.data = event[key]
+                    base.label = key
+                    return base
+                })
+                graphData(obj, [fastestTime, slowestTime])
+            })
+        })
+
+    </script>
+
 </body>
 
 </html>

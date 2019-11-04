@@ -32,7 +32,7 @@ async function parseData([raw, sport]) {
                                     date = $(event).find(`td[style="width: 60px;"]`).text()
                                     // console.log('Time', time)
 
-                                    return { 'time': time, 'date': `${date} ${yearNum}` }
+                                    return { 'time': time, 'date': `${date}` }
                                 })
                         }
                     })
@@ -48,7 +48,7 @@ async function restructureData(parsed) {
             let year = parsed[i].year
             for (let j = 0; j < parsed[i].events.length; j++) {
                 let event = parsed[i].events[j].event
-                console.log(event)
+                // console.log(event)
                 if (structure[event] == undefined) {
                     structure[event] = {}
                 }
@@ -58,10 +58,11 @@ async function restructureData(parsed) {
                 for (let k = 0; k < parsed[i].events[j].data.length; k++) {
                     let result = parsed[i].events[j].data[k]
                     // console.log(result.time)
-                    let time = moment(result.time, "mm:ss.S")
-                    let date = moment(result.date, "MMM DD YYYY")
-                    console.log(time)
-                    structure[event][year].push([time, date])
+                    var [min, sec, milli] = result.time.split(/\:|\./)
+                    let time = new Date(1970, 1, 1, 0, min, sec, milli * 100)
+                    let date = new Date(result.date + " 2000")
+                    // console.log(time)
+                    structure[event][year].push({ x: date.valueOf(), y: time.valueOf() })
                 }
             }
         }
