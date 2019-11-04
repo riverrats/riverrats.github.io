@@ -23,7 +23,12 @@ async function parseData([raw, sport]) {
                                     let timeElement = $(event).find(`td[style="${timeSelector}"] > a`)[0] ||
                                         $(event).find(`td[style="${timeSelector}"]`)[0]
                                     // Make sure we only take the text, not the 'pr' or 'sr' with it
-                                    time = timeElement.childNodes[0].nodeValue.replace('h', '')
+                                    let time = ''
+                                    try {
+                                        time = timeElement.childNodes[0].nodeValue.replace('h', '')
+                                    } catch (Error) {
+                                        return
+                                    }
                                     // Ignore not starting
                                     if (time == 'DNS') {
                                         return
