@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="grapher.js"></script>
+    <script src="https://momentjs.com/downloads/moment.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://underscorejs.org/underscore-min.js"></script>
+
+    <style>
+        div.small>*,
+        img {
+            display: none;
+        }
+
+        a {
+            text-decoration: none;
+            color: black;
+            margin-right: 2em;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .line {
+            fill: none;
+            stroke: blue;
+            stroke-width: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <input type="text" placeholder="Search Athlete">
+    <table id="results">
+
+    </table>
+    <ul id="events">
+
+    </ul>
+    <canvas id='graph'>
+
+    </canvas>
+    <script>
+        function graphData(data, [fastest, slowest], [first, last]) {
+
+            new Chart($('#graph'), {
+                type: 'line',
+                data: {
+                    datasets: times
+                },
+                options: {
+                    scales: {
+                        xAxes: [{
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Date'
+                            },
+                            type: 'time',
+                            time: {
+                                displayFormats: {
+                                    week: 'MMM DD'
+                                }
+                            }
+                            
+                            
+                        }],
+                        yAxes: [{
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Time'
+                            },
+                            type: 'linear',
+                            position: 'left',
+                            ticks: {
+                                min: fastest.format('X'),
+                                max: slowest.format('X'),
+                                // stepSize: times['step'],
+                                // autoSkip: true,
+                                callback: (rawTime) => {
+                                    time = moment(rawTime)
+                                    return time.format('mm:ss.S')
+                                }
+                            }
+                        }]
+                    },
+                    title: {
+                        display: true,
+                        text: name
+                    },
+                    hover: {
+                        mode: "nearest"
+                    },
+                    tooltips: {
+                        callbacks: {
+                            title: function (tooltip, data) {
+                                return moment(tooltip[0].xLabel).format('MMM DD YYYY')
+                            },
+                            label: function (tooltip, data) {
+                                time = moment(tooltip.yLabel).format('mm:ss.S')
+                                return time
+                            }
+                        }
+                    }
+                }
+            });
+        }
+            
+            let throttledHandleInput = _.throttle(handleInput, 500)
+            $("input[type='text']").on('input', throttledHandleInput)
+        function handleInput() {
+            let val = this.value
+            if (val.length > 3) {
+                // Search team
+                $('#results').html('<tr class="info"><td>Loading...</td></tr>')
+                postCORS("https://www.athletic.net/Search.aspx/runSearch",
+                    { 'fq': 't:a', 'q': val, start: 0 }).then(data => {
+                        $('#results').html(data.d.results)
+                        $('a.result-title-xc, a.result-title-tf, a[data-toggle="tooltip"]')
+                        .each((_, elem) => {
+                            elem = $(elem)
+                            let href = elem.attr('href').split('/')
+                            elem.data('sport', href[0])
+                            elem.data('id', href[1].split('=')[1])
+                            elem.attr('href', '#')
+                            elem.attr('class', 'athlete')
+                            elem.append(href[0])
+                        })
+                    }).catch(e => {
+
+                        $(".info").text('Error:', e.statusText)
+                    })
+            }
+        }
+        // margins?
+        // 10:50.12", "Mar 15 2018
+
+        // dynamically added https://stackoverflow.com/questions/16022744/jquery-on-click-not-working
+        $('#results').on('click', 'a.athlete', event => {
+            let tag = $(event.target)
+            let sport = tag.data('sport')
+            let id = tag.data('id')
+            getCORS(`https://www.athletic.net/${sport}/Athlete.aspx?AID=${id}&L=0`)
+            .then(data => {
+                let parsedDOM = new DOMParser().parseFromString(data, "text/html")
+                return [parsedDOM, sport]
+            })
+            .then(parseData)
+            .then(restructureData)
+            .then(restructured => {
+                console.log(restructured)
+                d3.select('ul')
+                .selectAll('li')
+                .data(Object.keys(restructured))
+                .enter()
+                .append('li')
+                .text(d => d)
+                return restructured
+            }).then(data => {
+                console.log(data)
+                let first = data[_.keys(data)[0]]
+                let allData = _.flatten(_.values(first), true)
+                let fastestTime = _.min(allData, (data) => data[0].format('X'))[0]
+                let slowestTime = _.max(allData, (data) => data[0].format('X'))[0]
+                let firstRace = _.min(allData, (data) => data[1].format('X'))[1]
+                let lastRace = _.max(allData, (data) => data[1].format('X'))[1]
+                console.log(fastestTime, slowestTime, firstRace, lastRace)
+                // add properties to each node
+                
+            })
+        })
+
+    </script>
+
+</body>
+
+</html>
