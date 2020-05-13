@@ -7,40 +7,70 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
     <script src="https://momentjs.com/downloads/moment.js"></script>
     <script src="//d3js.org/d3.v4.min.js"></script>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="./bump.js"></script>
+        <style>
+            .active {
+                opacity: 1.0;
+            }
+
+            .tooltip {
+                position: absolute;
+                padding: 10px;
+                font: 12px sans-serif;
+                background: #222;
+                color: #fff;
+                border: 0px;
+                border-radius: 8px;
+                pointer-events: none;
+                opacity: 0.9;
+                visibility: hidden;
+            }
+
+            path.active {
+                stroke-width: 3.0;
+            }
+        </style>
 </head>
 <body>
-    <div> Peter's Timeline Visual (desktop might work better) </div>
-    <style>
-        .active {
-            opacity: 1.0;
-        }
-        .tooltip {
-        position: absolute;
-        padding: 10px;
-        font: 12px sans-serif;
-        background: #222;
-        color: #fff;
-        border: 0px;
-        border-radius: 8px;
-        pointer-events: none;
-        opacity: 0.9;
-        visibility: hidden;
-        }
-        path.active {
-        stroke-width: 3.0;
-        }
-    </style>
+        <div class="container">
+            <div class="row mt-5">
+                <div class="col  d-flex flex-row justify-content-center">
+                    <a class="btn btn-secondary" href="index.html"> Go home </a>
+                </div>
+            </div>
+            <div class="row mt-5">
+
+                <div class="d-flex flex-column justify-items-center justify-content-center">
+                        <p class="text-center"> Peter's Timeline Visual (desktop might work better). A different type of line chart called a bump chart, this shows the top 10 runners throughout the history of huron. The range 2003-2019 was selected as before 2003 data is spotty.
+
+                            Hover over a line to view more information. A black outline symbolizes an athletes last race. Sometimes the dots aren't connected properly, my bad.
+                        </p>
+                        <button class="btn btn-primary mt-5" onclick="generate('M')">generate Chart Guys</button>
+                        <button class="btn btn-primary mt-5" onclick="generate('F')">generate Chart Girls</button>
+                        <div id="status"></div>
+                </div>
+                <div class="col">
+                </div>
+            </div>
+
+        </div>
+        <svg>
+
+        </svg>
+    
     <script>
         let engine = new RunData();
-        year = 2000
-        function nextYear() {
-            year+=1
+        year = 2003
+        function generate(gender) {
+            $('#status').text('Downloading ~17 web pages (this might take a little while)...')
             let years = []
             for (let y = year; y <= 2019;y++) {
                 years.push(y)
             }
-            Promise.all(years.map(y => engine.getResultsGrid("13318",`${y}`,"M"))).then(res => {
+            Promise.all(years.map(y => engine.getResultsGrid("13318",`${y}`,gender))).then(res => {
+                            $('#status').text('Now generating data structures...')
             let allSeasons = res.reduce((obj, season) => {
             return Object.assign(obj, season)
             }, {})
@@ -75,12 +105,13 @@
             })
         }
         function createChart(flatData, dateRange, maxRace) {
-            var width = 20000
+            $('#status').text('Now building chart...')
+            var width = 16000
             var height = 300
             var horizontalOffset = 50
             var verticalOffset = 30
             d3.selectAll("svg > *").remove();
-            var svg = d3.select('body').select('svg')
+            var svg = d3.select('svg')
             .attr('width', width)
             .attr('height', height)
 
@@ -198,6 +229,7 @@
               .attr('fill', d=>colorScale(d.name))
               .attr("r", d=> d.time === null  ? 0 : 6)
               .attr("stroke-width", 1.5)
+              .attr('stroke', d=> d.careerEndNode ? 'black' : 'white')
               .attr('opacity', d=> d.careerEndNode ? '1' : '0.3');
             // for (athlete of data.lines) {
             //     // var line = d3.line()
@@ -241,11 +273,9 @@
               return !d3.select(this).classed('click-active');
             });
       })
+                  $('#status').text('Done.')
         }
     </script>
-    <button onclick="nextYear()">generate Chart</button>
-    <svg>
 
-    </svg>
 </body>
 </html>

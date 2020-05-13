@@ -61,7 +61,7 @@ class RunData {
                     if (raw[i - 1 + 2] == " ") { continue }
                     let oldTime = raw[i - 1 + 2]
 
-                    if (raw[i + 2] == " ") { raw[i + 2] = oldTime } // overwrite a null time to a previous one
+                    if (raw[i + 2] == " " || (raw[i + 2] in lookupTable)) { raw[i + 2] = oldTime } // overwrite a null time to a previous one
                     if (moment(oldTime, "mm:ss.SS").isBefore(moment(raw[i+2], "mm:ss.SS"))) { raw[i + 2] = oldTime}
                     //if (raw[i + 2] == " ") { raw[i + 2] = raw[i - 1 + 2] } // overwrite a null time to a previous one
                 }
