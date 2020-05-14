@@ -98,11 +98,26 @@
             let dates = Object.keys(allSeasons).sort(function(a,b) {
             return moment(a.replace("(2)","")).isBefore(moment(b.replace("(2)",""))) ? -1 : 1;
             })
+            console.log(dates)
             // Now we check differences to find end node for each athlete. If name in season1 and not in season2,
             endNode = true
             console.log(allSeasons)
             createChart(flatData, dates, biggestRace)
+            }).catch(err => {
+                $('#status').text(`${err}`)
             })
+
+
+
+
+
+
+
+
+
+
+
+            43
         }
         function createChart(flatData, dateRange, maxRace) {
             $('#status').text('Now building chart...')
@@ -189,7 +204,7 @@
                     }
                     let nextDate = dates[dateIdx + 1]
                     let distanceAfter = dateRange.indexOf(nextDate) - dateRange.indexOf(dates[dateIdx])
-                    if (distanceAfter == 1) { return true } else if (distanceAfter == 0) {
+                    if (distanceAfter == 1 && d.time !== null) { return true } else if (distanceAfter == 0) {
                         //let prevDate = dates[dateIdx - 1]
                         if (athleteData[dateIdx].isCopy) {
                             console.log('found a duplicated node', dates[dateIdx])
@@ -201,6 +216,7 @@
                         //console.log(athleteData[dateIdx - 1], athleteData[dateIdx], athleteData[dateIdx + 1])
                         //return false
                     }
+                    return false
 
                 }) // stop line when the end of the season approaches
                 //var filteredData = athleteData.filter(d=>lineF.defined(d));
