@@ -62,7 +62,7 @@
     
     <script>
         let engine = new RunData();
-        year = 2003
+        year = 1969
         function generate(gender) {
             $('#status').text('Downloading ~17 web pages (this might take a little while)...')
             let years = []
@@ -74,50 +74,29 @@
             let allSeasons = res.reduce((obj, season) => {
             return Object.assign(obj, season)
             }, {})
-            console.log(allSeasons)
             // Seperate out by athlete and only keep (1) seasonEndNode
             let flatData = Object.values(allSeasons).flatMap(d=>d)
-            console.log(flatData)
             let uniqueNames = [...new Set(flatData.map(d=>d.name))]
-            console.log(uniqueNames)
             for (let name of uniqueNames) {
             if (flatData.filter(d => d.name == name && d.seasonEndNode == true).length == 0) {
-            console.log(name)
-            console.log(flatData.filter(d => d.name == name))
             }
-            let athleteData = flatData.filter(d => d.name == name && d.seasonEndNode == true).slice(-1)[0].time
-            console.log(athleteData)
+            let seasonEndNodes = flatData.filter(d => d.name == name && d.seasonEndNode == true)
+            let lastEndNode = seasonEndNodes.slice(-1)[0].time
             let afterSeason = false
             flatData = flatData.map(d => {
             if (d.name == name && afterSeason) { d.afterSeason = true }
-            if (d.seasonEndNode && d.time == athleteData) { afterSeason = true; d.careerEndNode = true }
+            if (d.seasonEndNode && d.time == lastEndNode) { afterSeason = true; d.careerEndNode = true }
             return d
             })
             }
-            let biggestRace = Math.max(...Object.values(allSeasons).map(v => v.filter(t => t.time !== null).length))
-            let dates = Object.keys(allSeasons).sort(function(a,b) {
-            return moment(a.replace("(2)","")).isBefore(moment(b.replace("(2)",""))) ? -1 : 1;
-            })
-            console.log(dates)
-            // Now we check differences to find end node for each athlete. If name in season1 and not in season2,
-            endNode = true
-            console.log(allSeasons)
-            createChart(flatData, dates, biggestRace)
+            let biggestRace = Math.max(...Object.values(allSeasons).map(d => d.length))
+            let allDates = Object.keys(allSeasons).sort(function (a, b) { return moment(a.replace("(2)", ""),
+            "MMM DD YYYY").isBefore(moment(b.replace("(2)", ""), "MMM DD YYYY")) ? -1 : 1; })
+            console.log(allDates)
+            createChart(flatData, allDates, biggestRace)
             }).catch(err => {
                 $('#status').text(`${err}`)
             })
-
-
-
-
-
-
-
-
-
-
-
-            43
         }
         function createChart(flatData, dateRange, maxRace) {
             $('#status').text('Now building chart...')
@@ -147,35 +126,30 @@
             .attr("transform", `translate(${horizontalOffset},0)`)
             .call(yAxis)
             let uniqueNames = [...new Set(flatData.map(d=>d.name))]
-            let colorScale = d3.scaleOrdinal(d3.schemeCategory20).domain(uniqueNames)
-            //console.log(uniqueNames)
+            let colors = ["#FF0900",
+            '#C3423F',
+            '#EF8354',
+            "#FF7F00",
+            "#FFEF00",
+            '#E2C044',
+            '#1CFEBA',
+            "#00F11D",
+            "#0079FF",
+            '#5BC0EB',
+            '#9BC53D',
+            '#2E5266',
+            '#9D8DF1',
+            '#BC69AA',
+            '#6A66A3',
+            "#A800FF"]
+            let colorScale = d3.scaleOrdinal(colors).domain(uniqueNames)
             for (let name of uniqueNames) {
-                let athleteData = flatData.filter(d => d.name == name)
-                // Now we add fillers
-                // (0) sort in chronological order
-                // athleteData.sort(function(a,b) {
-                // return moment(a.date).isBefore(moment(b.date)) ? -1 : 1;
-                // })
-                // //console.log(athleteData)
-                // // (1) find last legit time
-                // let times = athleteData.map(d=>d.time)
-                // let lastTime = times.slice().reverse().filter(d=>d !== null)[0] // the last legit time
-                // let lastTimeIdx = times.indexOf(lastTime)
-                // console.log(lastTime, times[lastTimeIdx], athleteData[lastTimeIdx].time)
-                // // (2) fill in athlete data
-                // for (let i=1;i<athleteData.length;i++) {
-                //     if (i > lastTimeIdx) {
-                //         console.log('Skipping')
-                //         continue
-                //     }// the rest are null, so keep them
-                //     if (athleteData[i-1].time == null) { continue }
-                //     if (athleteData[i].time == null) {
-                //         console.log('Setting time...')
-                //     athleteData[i].time = athleteData[i-1].time
-                //     }
-                // }
+                let athleteData = flatData.filter(d => d.name == name).sort(function (a, b) {
+                let date1 = moment(a.date.replace("(2)", ""),  "MMM DD YYYY")
+                let date2 = moment( b.date.replace("(2)", ""), "MMM DD YYYY")
+                return date1.isBefore(date2) ? -1 : 1
+                })
                 // This will be a pain in the ass but we need to duplicate certain data values
-                let dates = athleteData.map(d => d.date)
                 let copy = athleteData.slice()
                 copy.forEach((val, i) => {
                     if (i == copy.length - 1 || i == 0) { return }
@@ -183,37 +157,32 @@
                     let diff2 = dateRange.indexOf(val.date) - dateRange.indexOf(copy[i - 1].date)
                     if  (diff > 1 && diff2 == 1) {
                         let valCopy = Object.assign({}, val)
-                        console.log('duplicated node', val.date)
                         valCopy.seasonEndNode = false
-                        valCopy.isCopy = true
+                        valCopy.isCopy = 'first'
                         valCopy.actualTime = false
                         athleteData.splice(i, 0, valCopy)
                     }
-                    //let prevDate = 
                 })
-                //console.log(athleteData)
+                let dates = athleteData.map(d => d.date)
+
                 var lineF = d3.line()
                 .x(d=>x(d.date))
                 .y(d=>y(d.rank))
                 .defined(d => {
-                    let dates = athleteData.map(d => d.date)
                     let dateIdx = dates.indexOf(d.date)
-                    //if (dateIdx == 0) { dateIdx++ }
                     if (dateIdx == dates.length - 1) {
                         return true
                     }
                     let nextDate = dates[dateIdx + 1]
                     let distanceAfter = dateRange.indexOf(nextDate) - dateRange.indexOf(dates[dateIdx])
-                    if (distanceAfter == 1 && d.time !== null) { return true } else if (distanceAfter == 0) {
+                    if (distanceAfter == 1) { return true } else if (distanceAfter == 0) {
                         //let prevDate = dates[dateIdx - 1]
-                        if (athleteData[dateIdx].isCopy) {
-                            console.log('found a duplicated node', dates[dateIdx])
-                            athleteData[dateIdx].isCopy = false
+                        if (athleteData[dateIdx].isCopy == 'first') {
+                            athleteData[dateIdx].isCopy = 'second'
                             return true
-                        } else { 
+                        } else if (athleteData[dateIdx].isCopy == 'second') {
                             return false
                         }
-                        //console.log(athleteData[dateIdx - 1], athleteData[dateIdx], athleteData[dateIdx + 1])
                         //return false
                     }
                     return false
@@ -243,22 +212,10 @@
               .attr("cy", d=>y(d.rank))
               .attr('class', d=>d.name.replace(/\s/g,'-'))
               .attr('fill', d=>colorScale(d.name))
-              .attr("r", d=> d.time === null  ? 0 : 6)
+              .attr("r", d=> d.careerEndNode ? 8 : d.actualTime ? 6: 4)
               .attr("stroke-width", 1.5)
-              .attr('stroke', d=> d.careerEndNode ? 'black' : 'white')
-              .attr('opacity', d=> d.careerEndNode ? '1' : '0.3');
-            // for (athlete of data.lines) {
-            //     // var line = d3.line()
-            //     // .x(d => x(d.date))
-            //     // .y(d => {
-            //     //     if (d['time'] == null) {
-            //     //         console.log('null time')
-            //     //         return 0;
-            //     //     }
-            //     //     data.lines.map(year => year.d.time
-            //     // })
-            //     svg.append('path')
-            // }
+              .attr('stroke', d=> d.careerEndNode ? 'black' : d.actualTime ? 'grey' : 'white')
+              .attr('opacity', d=> '.8');
             // For each athlete, we need a seperate line
               var tooltip = d3.select("body").append("div")
               .attr("class", "tooltip");

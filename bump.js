@@ -66,7 +66,8 @@ class RunData {
                     //if (raw[i + 2] == " ") { raw[i + 2] = raw[i - 1 + 2] } // overwrite a null time to a previous one
                 }
                 raw.slice(2).forEach((t,i) => { // All of the athletes times
-                    let res = Object.assign({date: dates[i], time: t==" "?null:t, actualTime: (i==0) ? true : (raw.slice(2)[i-1]==t) ? false : true}, obj)
+                    if (t==" ") { return }
+                    let res = Object.assign({date: dates[i], time: t, actualTime: (i==0) ? true : (raw.slice(2)[i-1]==t) ? false : true}, obj)
                     if (!(dates[i] in timeSorted)) {
                         timeSorted[dates[i]] = []
                     }
@@ -92,12 +93,10 @@ class RunData {
             let toDelete = []
             for (let athlete of uniqueNames) {
                 let times = flattened.filter(d => d.name == athlete)
-                //console.log(times)
-                let lastTime = times.slice().reverse().filter(d => d.time !== null)[0] // the index of the last time
-                if (lastTime == undefined) { // remove this athlete, they have no valid times after cutoff
-                    toDelete.push(athlete)
-                    continue
-                }
+                let lastTime = times.slice().sort(function (a, b) {
+                    return moment(a.date.replace("(2)", ""),
+                        "MMM DD YYYY").isBefore(moment(b.date.replace("(2)", ""), "MMM DD YYYY")) ? 1 : -1;
+                })[0]
                 timeSorted[lastTime.date] = timeSorted[lastTime.date].map(d => {
                     if  (d.name == athlete) {
                         d.seasonEndNode = true
