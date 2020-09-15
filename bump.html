@@ -43,7 +43,7 @@
             <div class="row mt-5">
 
                 <div class="d-flex flex-column justify-items-center justify-content-center">
-                        <p class="text-center"> Peter's Timeline Visual (desktop might work better). A different type of line chart called a bump chart, this shows the top 10 runners throughout the history of huron. The range 2003-2019 was selected as before 2003 data is spotty.
+                        <p class="text-center"> Peter's Timeline Visual (desktop might work better). A different type of line chart called a bump chart, this shows the top 10 runners throughout the history of huron. The range 2003-2020 was selected as before 2003 data is spotty.
 
                             Hover over a line to view more information. A black outline symbolizes an athletes last race. Sometimes the dots aren't connected properly, my bad.
                         </p>
@@ -64,9 +64,9 @@
         let engine = new RunData();
         year = 1969
         function generate(gender) {
-            $('#status').text('Downloading ~17 web pages (this might take a little while)...')
+            $('#status').text('Downloading ~18 web pages (this might take a little while)...')
             let years = []
-            for (let y = year; y <= 2019;y++) {
+            for (let y = year; y <= 2020;y++) {
                 years.push(y)
             }
             Promise.all(years.map(y => engine.getResultsGrid("13318",`${y}`,gender))).then(res => {
