@@ -93,10 +93,31 @@
             let allDates = Object.keys(allSeasons).sort(function (a, b) { return moment(a.replace("(2)", ""),
             "MMM DD YYYY").isBefore(moment(b.replace("(2)", ""), "MMM DD YYYY")) ? -1 : 1; })
             console.log(allDates)
+            createLineChart(allSeasons)
             createChart(flatData, allDates, biggestRace)
             }).catch(err => {
                 $('#status').text(`${err}`)
             })
+        }
+        function createLineChart(dates) {
+            console.log(dates)
+            let final = []
+            for (const [key, value] of Object.entries(dates)) {
+                // lets just do it manually fuck it
+                let mins = 0, secs = 0
+
+                value.forEach(part => {
+                    let result = part.time
+                    let part1 = result.split(':')
+                    let part2 = part1[1].split('.')
+                    mins += parseInt(part1[0])
+                    secs += parseInt(part2[0])
+                })
+                let avgSecs = ((mins * 60 + secs) / value.length) / 60
+                console.log(key, avgSecs)
+                final.push({date: d3.timeParse("%m %d %Y")(key), val: Math.round(avgSecs * 100) / 100})
+            }
+            console.log(final)
         }
         function createChart(flatData, dateRange, maxRace) {
             $('#status').text('Now building chart...')
