@@ -92,7 +92,6 @@
             let biggestRace = Math.max(...Object.values(allSeasons).map(d => d.length))
             let allDates = Object.keys(allSeasons).sort(function (a, b) { return moment(a.replace("(2)", ""),
             "MMM DD YYYY").isBefore(moment(b.replace("(2)", ""), "MMM DD YYYY")) ? -1 : 1; })
-            console.log(allDates)
             createLineChart(allSeasons)
             createChart(flatData, allDates, biggestRace)
             }).catch(err => {
@@ -100,7 +99,6 @@
             })
         }
         function createLineChart(dates) {
-            console.log(dates)
             let final = []
             for (const [key, value] of Object.entries(dates)) {
                 // lets just do it manually fuck it
@@ -114,10 +112,8 @@
                     secs += parseInt(part2[0])
                 })
                 let avgSecs = ((mins * 60 + secs) / value.length) / 60
-                console.log(key, avgSecs)
                 final.push({date: d3.timeParse("%m %d %Y")(key), val: Math.round(avgSecs * 100) / 100})
             }
-            console.log(final)
         }
         function createChart(flatData, dateRange, maxRace) {
             $('#status').text('Now building chart...')

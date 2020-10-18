@@ -37,6 +37,7 @@ class RunData {
             jqueryDoc.find(`table.pull-right-sm`).first().find('td').toArray().forEach(td => {
                     lookupTable[td.childNodes[0].textContent] = td.childNodes[1].textContent
             })
+
             let table = jqueryDoc.find(`div#${gender}_Table`)
             let dates = table.find('tbody').first().find('th').toArray().filter(date => date.className.indexOf("td") > -1).map(date => date.textContent + ` ${year}`)
             for (let i=1;i<dates.length;i++) {
@@ -46,7 +47,7 @@ class RunData {
 
                 if (node.getElementsByClassName("subscript").length >= 1) {
                     // this is a time node, check for 5k
-                    if (lookupTable[node.childNodes[1].textContent] !== "5,000 Meters") { return ' ' }
+                    if (lookupTable[node.childNodes[2].textContent] !== "5,000 Meters") { return ' ' }
                         
                 }
              return node.textContent
@@ -115,7 +116,6 @@ class RunData {
                     }
                 }
             }
-
             return timeSorted
         })
     }
