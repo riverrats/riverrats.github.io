@@ -66,7 +66,7 @@
         function generate(gender) {
             $('#status').text('Downloading ~18 web pages (this might take a little while)...')
             let years = []
-            for (let y = year; y <= 2021;y++) {
+            for (let y = year; y <= 2020;y++) {
                 years.push(y)
             }
             Promise.all(years.map(y => engine.getResultsGrid("13318",`${y}`,gender))).then(res => {
